@@ -53,4 +53,52 @@ function validateAge(req, res, next) {
   next();
 }
 
-module.exports = { validateLogin, validateName, validateAge };
+function validateTalk(req, res, next) {
+  const { talk } = req.body;
+  if (!talk) {
+    return res.status(400).json({ message: 'O campo "talk" é obrigatório' });
+  }
+
+  next();
+}
+
+function validateDate(date) {
+  const dateRegex = /^([0-2][0-9]|(3)[0-1])(\/)(((0)[0-9])|((1)[0-2]))(\/)\d{4}$/i;
+  return dateRegex.test(date);
+}
+
+function validateWatchedAt(req, res, next) {
+  const { talk: { watchedAt } } = req.body;
+  if (!watchedAt) {
+    return res.status(400).json({ message: 'O campo "watchedAt" é obrigatório' });
+  }
+
+  if (!validateDate(watchedAt)) {
+    return res.status(400).json({ message: 'O campo "watchedAt" deve ter o formato "dd/mm/aaaa"' });
+  }
+
+  next();
+}
+
+function validateRate(req, res, next) {
+  const { talk: { rate } } = req.body;
+
+  if (!rate) {
+    return res.status(400).json({ message: 'O campo "rate" é obrigatório' });
+  }
+
+  if ((Number.isInteger(rate) && rate < 1) || rate > 5) {
+    return res.status(400).json({ message: 'O campo "rate" deve ser um inteiro de 1 à 5' });
+  }
+
+  next();
+}
+
+module.exports = {
+  validateLogin,
+  validateName,
+  validateAge,
+  validateTalk,
+  validateWatchedAt,
+  validateRate,
+};
