@@ -34,6 +34,23 @@ app.get('/talker', async (_req, res) => {
   }
 });
 
+app.get('/talker/search', authMiddleware, async (req, res) => {
+  const { q } = req.query;
+  try {
+    const talker = await fsUtils.readFile();
+    const talkerMatch = talker.filter((t) => t.name.includes(q));
+    if (!q) {
+      return res.status(200).json(talker);
+    }
+    if (!talkerMatch) {
+      return res.status(200).json([]);
+    }
+    return res.status(200).json(talkerMatch);
+  } catch (error) {
+    return res.status(500).end();
+  }
+});
+
 app.get('/talker/:id', async (req, res) => {
   try {
     const { id } = req.params;
@@ -71,7 +88,7 @@ app.delete('/talker/:id', async (req, res) => {
   } catch (error) {
     return res.status(500).end();
   }
-}); 
+});
 
 app.use(validateName);
 app.use(validateAge);
