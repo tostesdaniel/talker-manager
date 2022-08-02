@@ -55,32 +55,48 @@ app.post('/login', validateLogin, (_req, res) => {
   return res.status(200).json({ token });
 });
 
-app.post(
-  '/talker',
-  authMiddleware,
-  validateName,
-  validateAge,
-  validateTalk,
-  validateWatchedAt,
-  validateRate,
-  async (req, res) => {
-    const { name, age, talk } = req.body;
-    try {
-      const talker = await fsUtils.readFile();
-      const talkerExists = talker.some((t) => t.name === name);
-      if (talkerExists) {
-        return res.status(409).json({ message: 'Talker already exists' });
-      }
-      const lastTalkerId = talker.at(-1).id;
-      const newTalker = { id: lastTalkerId + 1, name, age, talk };
-      talker.push(newTalker);
-      await fsUtils.writeFile(talker);
-      return res.status(201).json(newTalker);
-    } catch (error) {
-      return res.status(500).end();
+app.use(authMiddleware);
+app.use(validateName);
+app.use(validateAge);
+app.use(validateTalk);
+app.use(validateWatchedAt);
+app.use(validateRate);
+
+app.post('/talker', async (req, res) => {
+  const { name, age, talk } = req.body;
+  try {
+    const talker = await fsUtils.readFile();
+    const talkerExists = talker.some((t) => t.name === name);
+    if (talkerExists) {
+      return res.status(409).json({ message: 'Talker already exists' });
     }
-  },
-);
+    const lastTalkerId = talker.at(-1).id;
+    const newTalker = { id: lastTalkerId + 1, name, age, talk };
+    talker.push(newTalker);
+    await fsUtils.writeFile(talker);
+    return res.status(201).json(newTalker);
+  } catch (error) {
+    return res.status(500).end();
+  }
+});
+
+app.put('/talker/:id', async (req, res) => {
+  const { id } = req.params;
+  const { name, age, talk } = req.body;
+  try {
+    const talker = await fsUtils.readFile();
+    const talkerIndex = talker.findIndex((t) => t.id === Number(id));
+    if (talkerIndex === -1) {
+      return res.status(404).json({ message: 'No talker found' });
+    }
+    const editedTalker = { id: Number(id), name, age, talk };
+    talker[talkerIndex] = { ...talker[talkerIndex].id, ...editedTalker };
+    await fsUtils.writeFile(talker);
+    return res.status(200).json(editedTalker);
+  } catch (error) {
+    return res.status(500).end();
+  }
+});
 
 app.listen(PORT, () => {
   console.log('Online');
