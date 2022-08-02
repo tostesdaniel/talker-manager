@@ -1,6 +1,7 @@
 const express = require('express');
 const crypto = require('crypto');
 const fsUtils = require('./fs-utils');
+const { validateLogin } = require('./middlewares/validation');
 
 const app = express();
 const PORT = '3000';
@@ -41,7 +42,7 @@ app.get('/talker/:id', async (req, res) => {
   }
 });
 
-app.post('/login', (_req, res) => {
+app.post('/login', validateLogin, (_req, res) => {
   const token = crypto.randomBytes(8).toString('hex');
   return res.status(200).json({ token });
 });
