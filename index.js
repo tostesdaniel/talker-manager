@@ -1,4 +1,5 @@
 const express = require('express');
+const crypto = require('crypto');
 const fsUtils = require('./fs-utils');
 
 const app = express();
@@ -38,6 +39,11 @@ app.get('/talker/:id', async (req, res) => {
   } catch (error) {
     return res.status(500).end();
   }
+});
+
+app.post('/login', (_req, res) => {
+  const token = crypto.randomBytes(8).toString('hex');
+  return res.status(200).json({ token });
 });
 
 app.listen(PORT, () => {
