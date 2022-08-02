@@ -1,6 +1,6 @@
-const fs_utils = require('./fs-utils');
-
 const express = require('express');
+const fsUtils = require('./fs-utils');
+
 const app = express();
 const PORT = '3000';
 
@@ -14,7 +14,7 @@ app.get('/', (_request, response) => {
 
 app.get('/talker', async (_req, res) => {
   try {
-    const talker = await fs_utils.readFile();
+    const talker = await fsUtils.readFile();
     if (!talker) {
       return res.status(200).json([]);
     }
