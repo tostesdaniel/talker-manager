@@ -56,6 +56,23 @@ app.post('/login', validateLogin, (_req, res) => {
 });
 
 app.use(authMiddleware);
+
+app.delete('/talker/:id', async (req, res) => {
+  const { id } = req.params;
+  try {
+    const talker = await fsUtils.readFile();
+    const talkerIndex = talker.findIndex((t) => t.id === Number(id));
+    if (talkerIndex === -1) {
+      return res.status(404).json({ message: 'No talker found' });
+    }
+    talker.splice(talkerIndex, 1);
+    await fsUtils.writeFile(talker);
+    return res.status(204).end();
+  } catch (error) {
+    return res.status(500).end();
+  }
+}); 
+
 app.use(validateName);
 app.use(validateAge);
 app.use(validateTalk);
