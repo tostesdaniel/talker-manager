@@ -5,7 +5,7 @@ async function readFile() {
 }
 
 async function writeFile(content) {
-  return await fs.writeFile('./talker.json', JSON.stringify(content));
+  await fs.writeFile('./talker.json', JSON.stringify(content));
 }
 
 module.exports = { readFile, writeFile };
