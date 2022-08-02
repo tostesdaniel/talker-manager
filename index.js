@@ -22,14 +22,6 @@ app.get('/', (_request, response) => {
   response.status(HTTP_OK_STATUS).send();
 });
 
-app.get('/talker', async (_req, res) => {
-  const talker = await fsUtils.readFile();
-  if (!talker) {
-    return res.status(200).json([]);
-  }
-  return res.status(HTTP_OK_STATUS).json(talker);
-});
-
 app.get('/talker/search', authMiddleware, async (req, res) => {
   const { q } = req.query;
   const talker = await fsUtils.readFile();
@@ -53,6 +45,14 @@ app.get('/talker/:id', async (req, res) => {
       .json({ message: 'Pessoa palestrante não encontrada' });
   }
   return res.status(200).json(talkerMatch);
+});
+
+app.get('/talker', async (_req, res) => {
+  const talker = await fsUtils.readFile();
+  if (!talker) {
+    return res.status(200).json([]);
+  }
+  return res.status(HTTP_OK_STATUS).json(talker);
 });
 
 app.post('/login', validateLogin, (_req, res) => {
@@ -87,7 +87,7 @@ app.post('/talker', async (req, res) => {
   if (talkerExists) {
     return res.status(409).json({ message: 'Talker already exists' });
   }
-  const lastTalkerId = talker.at(-1).id;
+  const lastTalkerId = talker[talker.length - 1].id;
   const newTalker = { id: lastTalkerId + 1, name, age, talk };
   talker.push(newTalker);
   await fsUtils.writeFile(talker);
