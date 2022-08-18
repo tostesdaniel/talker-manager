@@ -14,10 +14,6 @@ app.use(express.json());
 
 app.use('/', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
-app.get('/', (_request, response) => {
-  response.status(HTTP_OK_STATUS).send();
-});
-
 app.use('/talker', talkerRouter);
 
 app.post('/login', validateLogin, (_req, res) => {
