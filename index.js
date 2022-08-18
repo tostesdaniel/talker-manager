@@ -1,5 +1,7 @@
 const express = require('express');
 const crypto = require('crypto');
+const swaggerUi = require('swagger-ui-express');
+const swaggerDocument = require('./swagger_output.json');
 const talkerRouter = require('./routes/talkerRouter');
 const { validateLogin } = require('./middlewares/validation');
 
@@ -9,6 +11,8 @@ const PORT = '3000';
 const HTTP_OK_STATUS = 200;
 
 app.use(express.json());
+
+app.use('/', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 app.get('/', (_request, response) => {
   response.status(HTTP_OK_STATUS).send();
